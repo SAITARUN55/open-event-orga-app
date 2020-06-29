@@ -31,11 +31,11 @@
 
 -dontwarn javax.annotation**
 
--keep class org.fossasia.openevent.app.common.data.models.** {
-  *;
-}
+-dontwarn org.conscrypt.**
 
--keep class org.fossasia.openevent.app.common.utils.json.** {
+-dontwarn com.google.errorprone.**
+
+-keep class com.eventyay.organizer.data.** {
   *;
 }
 
@@ -57,14 +57,6 @@
 
 -keep class com.github.mikephil.charting.** { *; }
 
--dontwarn com.evernote.android.job.gcm.**
--dontwarn com.evernote.android.job.util.GcmAvailableHelper
-
--keep public class com.evernote.android.job.v21.PlatformJobService
--keep public class com.evernote.android.job.v14.PlatformAlarmService
--keep public class com.evernote.android.job.v14.PlatformAlarmReceiver
--keep public class com.evernote.android.job.JobBootReceiver
--keep public class com.evernote.android.job.JobRescheduleService
-
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl
+-ignorewarnings

@@ -1,12 +1,13 @@
 language: android
+dist: trusty
 sudo: false
 jdk:
     - oraclejdk8
 android:
   components:
     - tools
-    - android-27
-    - build-tools-27.0.1
+    - android-28
+    - build-tools-28.0.3
     - platform-tools
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -16,19 +17,18 @@ cache:
       - "${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/"
       - "$HOME/.gradle/caches/"
       - "$HOME/.gradle/wrapper/"
-install:
-  - echo yes | ${ANDROID_HOME}/tools/bin/sdkmanager "platforms;android-27"
-script:
-  - ./gradlew build
-  - ./gradlew testDebugUnitTestCoverage
-after_failure:
-  # tests
-  - cat app/build/reports/tests/testDebugUnitTest/index.html
+before_script:
+    - bash scripts/prep-key.sh
 
-  # app
-  - cat app/build/reports/lint-results.xml
-  - cat app/build/reports/lint-results.html
+script:
+    - ./gradlew assemblePlayStoreRelease
+    - ./gradlew assembleFdroidRelease
+    - ./gradlew testPlayStoreReleaseUnitTestCoverage
 after_success:
     - bash <(curl -s https://codecov.io/bash)
-    - bash scripts/prep-key.sh
     - bash scripts/update-apk.sh
+
+branches:
+  only:
+    - master
+    - development

@@ -1,9 +1,18 @@
+plugins {
+    id "com.diffplug.gradle.spotless" version "4.4.0"
+}
 apply plugin: 'com.android.application'
 apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'com.noveogroup.android.check'
 apply from: './jacoco.gradle'
+apply plugin: 'com.google.gms.oss.licenses.plugin'
+apply plugin: "net.ltgt.errorprone"
+apply plugin: "com.github.b3er.local.properties"
 
-def app_name = System.getenv('app_name') ?: "eventyay organizer"
+def app_name = System.getenv('app_name') ?: "Eventyay Organizer"
+def MAPBOX_ACCESS_TOKEN = System.getenv('MAPBOX_ACCESS_TOKEN') ?: "YOUR_ACCESS_TOKEN"
+
+def LOCAL_KEY_PRESENT = project.hasProperty('SIGNING_KEY_FILE') && rootProject.file(SIGNING_KEY_FILE).exists()
 
 android {
     lintOptions {
@@ -15,18 +24,40 @@ android {
         exclude 'META-INF/LICENSE'
     }
 
-    compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
     defaultConfig {
-        applicationId "org.fossasia.eventyay"
-        minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 4
-        versionName "1.0.3alpha"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId "com.eventyay.organizer"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode 17
+        versionName "1.7.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        manifestPlaceholders = [appName: app_name]
+        manifestPlaceholders = [
+            appName            : app_name,
+            MAPBOX_ACCESS_TOKEN: MAPBOX_ACCESS_TOKEN
+        ]
     }
+
+    signingConfigs {
+        if (TRAVIS_BUILD) {
+            release {
+                storeFile KEYSTORE_FILE
+                storePassword System.getenv("STORE_PASS")
+                keyAlias System.getenv("ALIAS")
+                keyPassword System.getenv("KEY_PASS")
+            }
+        } else if (LOCAL_KEY_PRESENT) {
+            release {
+                storeFile rootProject.file(SIGNING_KEY_FILE)
+                storePassword STORE_PASS
+                keyAlias ALIAS
+                keyPassword KEY_PASS
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -35,18 +66,27 @@ android {
 
             buildConfigField "String", "DEFAULT_BASE_URL", '"https://api.eventyay.com/v1/"'
             resValue "string", "default_base_url", '"https://api.eventyay.com/v1/"'
+            resValue "string", "FRONTEND_HOST", "eventyay.com"
+
+            if (LOCAL_KEY_PRESENT || TRAVIS_BUILD)
+                signingConfig signingConfigs.release
         }
         debug {
             testCoverageEnabled = true
-            buildConfigField "String", "DEFAULT_BASE_URL", '"https://open-event-api.herokuapp.com/v1/"'
-            resValue "string", "default_base_url", '"https://open-event-api.herokuapp.com/v1/"'
+            buildConfigField "String", "DEFAULT_BASE_URL", '"https://open-event-api-dev.herokuapp.com/v1/"'
+            resValue "string", "default_base_url", '"https://open-event-api-dev.herokuapp.com/v1/"'
+            resValue "string", "FRONTEND_HOST", "open-event-fe.netlify.com"
         }
     }
+
     dataBinding {
         enabled true
     }
     defaultConfig {
         multiDexEnabled true
+        resValue "string", "FACEBOOK_ID", "eventyay"
+        resValue "string", "TWITTER_ID", "eventyay"
+        resValue "string", "YOUTUBE_ID", "UCQprMsG-raCIMlBudm20iLQ"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -55,13 +95,46 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            unitTests.returnDefaultValues = true
+            all {
+                maxHeapSize = "512m"
+            }
+        }
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        fdroid {
+            dimension "default"
+        }
+
+        playStore {
+            dimension "default"
         }
     }
 }
 
+spotless {
+    java {
+        removeUnusedImports()
+        indentWithSpaces(2)
+        endWithNewline()
+        trimTrailingWhitespace()
+        target '**/*.java'
+    }
+}
+
+gradle.projectsEvaluated {
+    preBuild.dependsOn(spotlessApply)
+}
+
 repositories {
     maven { url "https://jitpack.io" }
-    maven { url 'http://dl.bintray.com/igenius-code/maven' }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone.disableWarningsInGeneratedCode = true
 }
 
 sentry {
@@ -78,127 +151,155 @@ sentry {
 
 configurations.all { config ->
     resolutionStrategy {
-        force 'com.android.support:multidex:1.0.2'
-    }
-    if (config.name.contains('UnitTest')) {
-        config.resolutionStrategy.eachDependency { details ->
-            if (details.requested.group == 'com.squareup.leakcanary' && details.requested.name == 'leakcanary-android') {
-                details.useTarget(group: details.requested.group, name: 'leakcanary-android-no-op', version: details.requested.version)
-            }
-        }
+        force 'com.android.support:multidex:1.0.3'
     }
 }
 
 check {
-    abortOnError true
-    findbugs {
-        abortOnError false
-    }
+    abortOnError false
+    findbugs { skip true }
+    checkstyle { skip true }
 }
-
-def dbflow_version = "4.1.2"
-def glide_version = "4.4.0"
-def retrofit_version = "2.3.0"
-def butterknife_version = "8.8.1"
-def dagger_version = "2.13"
-def stetho_version = "1.5.0"
-def leak_canary_version = "1.5.4"
-def support_lib_version = "27.0.2"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support Lib
-    implementation 'com.android.support:multidex:1.0.2'
-    implementation "com.android.support:appcompat-v7:${support_lib_version}"
-    implementation "com.android.support:cardview-v7:${support_lib_version}"
-    implementation "com.android.support:recyclerview-v7:${support_lib_version}"
-    implementation "com.android.support:design:${support_lib_version}"
-    implementation "com.android.support:palette-v7:${support_lib_version}"
-    implementation "com.takisoft.fix:preference-v7:${support_lib_version}.0"
-    implementation 'com.google.android.gms:play-services-vision:11.8.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation "androidx.cardview:cardview:1.0.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "com.google.android.material:material:1.2.0-beta01"
+    implementation "androidx.browser:browser:1.2.0"
+    implementation "androidx.palette:palette:1.0.0"
+    implementation "com.takisoft.fix:preference-v7:${versions.support_lib}.0"
+    //implementation "androidx.media:media:1.1.0-alpha04" // GradleIncompatible Workaround
+    //implementation "androidx.legacy:legacy-support-v4:1.0.0" // GradleIncompatible Workaround
+    annotationProcessor 'androidx.annotation:annotation:1.1.0' // Required for Glide
+    playStoreImplementation "com.google.android.gms:play-services-vision:${versions.play_services_vision}"
+    playStoreImplementation "com.google.android.libraries.places:places:${versions.places}"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     // Misc
-    implementation 'com.jakewharton.timber:timber:4.6.0'
-    implementation 'com.evernote:android-job:1.2.1'
-    implementation 'com.mikhaellopez:circularprogressbar:1.1.1'
-    implementation 'com.github.Ilhasoft:data-binding-validator:1.0.0'
-    implementation 'io.sentry:sentry-android:1.3.0'
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+    implementation 'com.mikhaellopez:circularprogressbar:3.0.3'
+    implementation 'com.github.Ilhasoft:data-binding-validator:2.0.0'
+    implementation "io.sentry:sentry-android:${versions.sentry_android}"
+    implementation "com.github.PhilJay:MPAndroidChart:${versions.mp_android_chart}"
     compileOnly 'com.google.code.findbugs:findbugs-annotations:3.0.1'
 
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-runtime:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${versions.lifecycle}"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:${versions.lifecycle}"
+
+    //WorkManager
+    implementation "android.arch.work:work-runtime:${versions.work_manager}"
+
     // DbFlow
-    implementation "com.github.raizlabs.dbflow:dbflow-core:${dbflow_version}"
-    implementation "com.github.raizlabs.dbflow:dbflow:${dbflow_version}"
-    implementation "com.github.raizlabs.dbflow:dbflow-rx2:${dbflow_version}"
-    annotationProcessor "com.github.raizlabs.dbflow:dbflow-processor:${dbflow_version}"
+    implementation "com.github.raizlabs.dbflow:dbflow-core:${versions.dbflow}"
+    implementation "com.github.raizlabs.dbflow:dbflow:${versions.dbflow}"
+    implementation "com.github.raizlabs.dbflow:dbflow-rx2:${versions.dbflow}"
+    annotationProcessor "com.github.raizlabs.dbflow:dbflow-processor:${versions.dbflow}"
 
     // Dagger
-    implementation "com.google.dagger:dagger:${dagger_version}"
-    annotationProcessor "com.google.dagger:dagger-compiler:${dagger_version}"
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android-support:${versions.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${versions.dagger}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${versions.dagger}"
 
     // Retrofit
-    implementation "com.squareup.okhttp3:okhttp:3.9.1"
-    implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
-    implementation "com.squareup.retrofit2:converter-jackson:${retrofit_version}"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofit_version}"
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
-    implementation 'com.github.jasminb:jsonapi-converter:0.8'
+    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-jackson:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+    implementation 'com.github.jasminb:jsonapi-converter:0.10'
+
 
     // RxJava
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
-    implementation 'com.f2prateek.rx.preferences2:rx-preferences:2.0.0-RC3'
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxandroid}"
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxjava}"
+    implementation 'com.f2prateek.rx.preferences2:rx-preferences:2.0.0'
 
     // Fast Adapter
-    implementation('com.mikepenz:fastadapter:3.0.4@aar') {
-        transitive = true
-    }
-    implementation 'com.mikepenz:fastadapter-commons:3.0.3@aar'
+    implementation "com.mikepenz:fastadapter:4.1.2"
     implementation 'com.timehop.stickyheadersrecyclerview:library:0.4.3'
     implementation 'me.xdrop:fuzzywuzzy:1.1.9'
 
     // Glide
-    implementation ("com.github.florent37:glidepalette:2.1.0") {
+    implementation("com.github.florent37:glidepalette:2.1.2") {
         transitive = false
     }
-    implementation "com.github.bumptech.glide:glide:${glide_version}"
-    implementation "com.github.bumptech.glide:okhttp3-integration:${glide_version}"
-    annotationProcessor "com.github.bumptech.glide:compiler:${glide_version}"
+    implementation "com.github.bumptech.glide:glide:${versions.glide}"
+    implementation "com.github.bumptech.glide:okhttp3-integration:${versions.glide}"
+    annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
 
     // ThreeTen
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
-    testImplementation 'org.threeten:threetenbp:1.3.6'
+    implementation "com.jakewharton.threetenabp:threetenabp:${versions.threetenbp}"
+    testImplementation 'org.threeten:threetenbp:1.4.4'
 
     // Leak Canary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:${leak_canary_version}"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${leak_canary_version}"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
 
     // Stetho
-    debugImplementation "com.facebook.stetho:stetho:${stetho_version}"
-    debugImplementation "com.facebook.stetho:stetho-okhttp3:${stetho_version}"
-    releaseImplementation 'net.igenius:stetho-no-op:1.1'
-    testImplementation 'net.igenius:stetho-no-op:1.1'
+    debugImplementation "com.facebook.stetho:stetho:${versions.stetho}"
+    debugImplementation "com.facebook.stetho:stetho-okhttp3:${versions.stetho}"
+    releaseImplementation "com.github.mypplication:stetho-noop:${versions.stetho_no_op}"
+    testImplementation "com.github.mypplication:stetho-noop:${versions.stetho_no_op}"
 
     // Butterknife
-    implementation "com.jakewharton:butterknife:${butterknife_version}"
-    annotationProcessor "com.jakewharton:butterknife-compiler:${butterknife_version}"
+    implementation "com.jakewharton:butterknife:${versions.butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.16.18'
-    testCompileOnly 'org.projectlombok:lombok:1.16.18'
-    annotationProcessor 'org.projectlombok:lombok:1.16.18'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.16.18'
+    compileOnly "org.projectlombok:lombok:${versions.lombok}"
+    testCompileOnly "org.projectlombok:lombok:${versions.lombok}"
+    annotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+    testAnnotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+
+    //colorpicker
+    implementation 'com.pes.materialcolorpicker:library:1.2.5'
+
+    //stepper
+    implementation 'com.github.badoualy:stepper-indicator:1.0.7'
+
+    // TimeLine View
+    implementation "com.github.vipulasri:timelineview:${versions.timelineView}"
+
+    //Rich text editor
+    implementation "jp.wasabeef:richeditor-android:1.2.2"
+
+    // Chrome Custom Tabs
+    playStoreImplementation "androidx.browser:browser:1.2.0"
+
+    //open-source licenses
+    playStoreImplementation "com.google.android.gms:play-services-oss-licenses:${versions.play_services}"
+
+    // QR Code Scanner
+    fdroidImplementation 'com.github.blikoon:QRCodeScanner:0.1.2'
+
+    // Mapbox
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v8:0.9.0'
+
+    // About Page
+    implementation 'com.github.medyo:android-about-page:1.2.5'
 
     //Testing
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.2.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-inline:2.8.9'
-    testImplementation 'org.json:json:20140107'
-    testImplementation 'org.robolectric:robolectric:3.6.1'
-    testImplementation "org.robolectric:shadows-multidex:3.6.1"
-    testImplementation "org.robolectric:shadows-supportv4:3.6.1"
+    testImplementation("androidx.arch.core:core-testing:2.1.0", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.mockito:mockito-inline:3.3.3'
+    testImplementation 'org.json:json:20180130'
+    testImplementation "org.robolectric:robolectric:${versions.roboelectric}"
+    testImplementation "org.robolectric:shadows-multidex:${versions.roboelectric}"
+    // testImplementation "org.robolectric:shadows-supportv4:${versions.roboelectric}"
 }

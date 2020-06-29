@@ -1,16 +1,18 @@
-![Open Event Organizer](https://storage.googleapis.com/eventyay.com/assets/branding/organizer_app_branding.png)
+![Open Event Organizer](docs/images/organizer_app_branding.png)
 
 
-## Open Event Organizer App
+## Open Event Organizer Android App
 
-[![Build Status](https://img.shields.io/travis/fossasia/open-event-orga-app/development.svg)](https://travis-ci.org/fossasia/open-event-orga-app)
-[![Codacy Grade](https://img.shields.io/codacy/grade/d6ae120356c94c0d94d6449ec540f520.svg)](https://www.codacy.com/app/mb/open-event-orga-app)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/fossasia/open-event-orga-app/development.svg)](https://codecov.io/gh/fossasia/open-event-orga-app)
-[![Appetize Preview](https://img.shields.io/badge/Preview-appetize.io-673AB7.svg)](https://appetize.io/app/t8hace1jdrybzvwwrfw5p1ayuw)
-[![Gitter](https://img.shields.io/badge/chat-on%20gitter-ff006f.svg)](https://gitter.im/fossasia/open-event-orga-app)
-> Event management app for organizers using Open Event Platform
+[![Build Status](https://img.shields.io/travis/fossasia/open-event-organizer-android/development.svg)](https://travis-ci.org/fossasia/open-event-organizer-android)
+[![Codacy Grade](https://img.shields.io/codacy/grade/d6ae120356c94c0d94d6449ec540f520.svg)](https://www.codacy.com/app/mb/open-event-organizer-android)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/fossasia/open-event-organizer-android/development.svg)](https://codecov.io/gh/fossasia/open-event-organizer-android)
+[![Appetize Preview](https://img.shields.io/badge/Preview-appetize.io-673AB7.svg)](https://appetize.io/app/w8v8z7pc9aewargb2uuyf108f0)
+[![Gitter](https://img.shields.io/badge/chat-on%20gitter-ff006f.svg)](https://gitter.im/fossasia/open-event-organizer-android)
+[![Twitter Follow](https://img.shields.io/twitter/follow/eventyay.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/eventyay)
 
-<img height="256px" src="https://user-images.githubusercontent.com/3874064/29111547-5814a318-7d08-11e7-8c86-0a10a640825e.png" />
+Event management app for organizers using Open Event Platform
+
+<img height="256px" src="docs/images/organizer_app_logo.png" />
 
 The core features of this Android Application are
 - Scan a QR code
@@ -19,9 +21,11 @@ The core features of this Android Application are
 - Ticket Management
 - Data sync with the [Open Event Organizer Server](https://github.com/fossasia/open-event-orga-server/)
 
-Currently, the application is released in alpha phase at Google Play Store [here](https://play.google.com/store/apps/details?id=org.fossasia.eventyay).
+Currently, the application is released in alpha phase and available here:
+[Google Play](https://play.google.com/store/apps/details?id=com.eventyay.organizer) and [F-Droid](https://f-droid.org/en/packages/com.eventyay.organizer/).
 
-<a href='https://play.google.com/store/apps/details?id=org.fossasia.eventyay&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height="80"/></a>
+<a href='https://play.google.com/store/apps/details?id=com.eventyay.organizer'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height="80"/></a>
+<a href='https://f-droid.org/en/packages/com.eventyay.organizer/'><img alt='Get it on F-Droid' src='https://fdroid.gitlab.io/artwork/badge/get-it-on.png' height="80"/></a>
 
 ## Roadmap
 
@@ -40,29 +44,26 @@ Our chat channel is on gitter here: https://gitter.im/fossasia/open-event-orga-a
 
 <table>
   <tr>
-    <td><img src="docs/_static/login.png"></td>
-    <td><img src="docs/_static/signup.png"></td>
-    <td><img src="docs/_static/navigation.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/login.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/dashboard_one.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/dashboard_two.png"></td>
+  </tr>
+    <tr>
+    <td><img src="docs/images/attendees.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/checkin.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/order_checkin.png"></td>
   </tr>
   <tr>
-    <td><img src="docs/_static/dashboard.png"></td>
-    <td><img src="docs/_static/attendees.png"></td>
-    <td><img src="docs/_static/checkin.png"></td>
-  </tr>
-  <tr>
-    <td><img src="docs/_static/about.png"></td>
-    <td><img src="docs/_static/organizer.png"></td>
-    <td><img src="docs/_static/organizer_content.png"></td>
-  </tr>
-   <tr>
-    <td><img src="https://user-images.githubusercontent.com/23634977/34945795-8d03341e-fa2a-11e7-840a-03e7838867e5.jpg"></td>
-    <td><img src="https://user-images.githubusercontent.com/23634977/34945794-8b5dd402-fa2a-11e7-8a4b-6650b0bc8b7a.jpg"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/create_ticket.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/navigation.png"></td>
+    <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/organizer.png"></td>
   </tr>
 </table>
 
 ## Development
 
-- The [Open Event Organizer Server](https://github.com/fossasia/open-event-orga-server) acts as the backend for this application. The API docs for the same can be accessed at https://open-event-api.herokuapp.com/ .
+- The [Open Event Organizer Server](https://github.com/fossasia/open-event-orga-server) acts as the backend for this application. The API docs for the same can be accessed at https://open-event-api-dev.herokuapp.com/ .
+- The following account can be used for testing and development purposes.
 
 ## Publishing
 
@@ -100,7 +101,7 @@ Please find info about the set up of the App in your development environment [he
 
 ### Project Conventions
 
-There is certain conventions we follow in the project, we recommend that you become familiar with these so that the development process is uniform for everyone:
+There are certain conventions we follow in the project, we recommend that you become familiar with these so that the development process is uniform for everyone:
 
 #### Dependency Injection
 
@@ -118,7 +119,7 @@ We realize that MVP is opinionated and there is no strict boundary between the r
 #### Project Structure
 
 Generally, projects are created using package by layer approach where packages are names by layers like `ui`, `activity`, `fragment`, etc but it quickly becomes unscalable in large projects where large number of unrelated classes are crammed in one layer and it becomes difficult to navigate through them.  
-Instead, we follow package by feature, which at the cost of flatness of our project, provides us packages of isolated functioning related classes which are likely to be a complete self sufficient component of the application. Each package all related classes of view, presenter, their implementations like Activities anf Fragments.  
+Instead, we follow package by feature, which at the cost of flatness of our project, provides us packages of isolated functioning related classes which are likely to be a complete self sufficient component of the application. Each package all related classes of view, presenter, their implementations like Activities and Fragments.  
 A notable exception to this is the `common` module and data classes like Models and Repositories as they are used in a cross component way.  
 ***Note:** The interface contract for Presenter and View is present in `contract` package in each module`*
 
@@ -131,20 +132,31 @@ So, please take a look at already written tests(they are fairly self-documenting
 
 Lastly, each class should only perform one task, do it well, and be unit tested for it. For example, if a presenter is doing more than it should, i.e., parsing dates or implementing search logic, better move it in its own class. There can be exceptions for this practice, but if the functionality can be generalised and reused, it should most definitely be transferred in its own class and unit tested.
 
-## Contributions Best Practices
+#### Branch Policy
 
-**Commits**
-* Write clear meaningful git commit messages (Do read http://chris.beams.io/posts/git-commit/)
-* Make sure your PR's description contains GitHub's special keyword references that automatically close the related issue when the PR is merged. (More info at https://github.com/blog/1506-closing-issues-via-pull-requests )
-* When you make very very minor changes to a PR of yours (like for example fixing a failing travis build or some small style corrections or minor changes requested by reviewers) make sure you squash your commits afterwards so that you don't have an absurd number of commits for a very small fix. (Learn how to squash at https://davidwalsh.name/squash-commits-git )
-* When you're submitting a PR for a UI-related issue, it would be really awesome if you add a screenshot of your change or a link to a deployment where it can be tested out along with your PR. It makes it very easy for the reviewers and you'll also get reviews quicker.
+The following branches are present in the project:
 
-**Feature Requests and Bug Reports**
-* When you file a feature request or when you are submitting a bug report to the [issue tracker](https://github.com/fossasia/open-event-orga-app/issues), make sure you add steps to reproduce it. Especially if that bug is some weird/rare one.
+ * **development** All development goes on in this branch. If you're making a contribution, you are supposed to make a pull request to _development_. PRs to development branch must pass a build check and a unit-test check on Circle CI.
+ 
+ * **master** This contains shipped code. After significant features/bugfixes are accumulated on development, we make a version update and make a release.
+ 
+ 	>Please Note that :-
+		Each push to master branch automatically publishes the application to Play Store as an Alpha Release. Thus, on each merge into master, the versionCode and versionName MUST be changed accordingly in app/build.gradle
 
-**Join the development**
-* Before you join development, please set up the project on your local machine, run it and go through the application completely. Press on any button you can find and see where it leads to. Explore. (Don't worry ... Nothing will happen to the app or to you due to the exploring :wink: Only thing that will happen is, you'll be more familiar with what is where and might even get some cool ideas on how to improve various aspects of the app.)
-* If you would like to work on an issue, drop in a comment at the issue. If it is already assigned to someone, but there is no sign of any work being done, please free to drop in a comment so that the issue can be assigned to you if the previous assignee has dropped it entirely.
+	 - _versionCode_ : **Integer** : To be monotonically incremented with each merge. Failure to do so will lead to publishing error, and thus is a crucial step before any merge
+	 - _versionName_ : **String** : User visible version of the app. To be changed following [semantic versioning](http://semver.org/)
+ 
+ * **apk** This branch consists of multiple apk's which get generated by the Travis CI when the contributors branch is merged with the development branch and when the development is merged with the master branch. After every merge the previous APK's are deleted and new one's are created. The APK's are generated in accordance with the **update-apk.sh** script which is present in scripts folder. 
+ 
+### PR Guidelines
+
+Please help us follow the best practice to make it easy for the reviewer as well as the contributor. We want to focus on the code quality more than on managing pull request ethics.
+
+ * Single commit per pull request
+ * For writing commit messages please read the [COMMITSTYLE](docs/commitStyle.md) carefully. Kindly adhere to the guidelines.
+ * Follow uniform design practices. The design language must be consistent throughout the app.
+ * The pull request will not get merged until and unless the commits are squashed. In case there are multiple commits on the PR, the commit author needs to squash them and not the maintainers cherrypicking and merging squashes.
+ * If the PR is related to any front end change, please attach relevant screenshots in the pull request description.
 
 ## License
 
